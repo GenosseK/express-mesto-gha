@@ -1,11 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const router = require('./routes');
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
 // Подключение к серверу MongoDB
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect('mongodb://127.0.0.1/mestodb', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -15,6 +16,10 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   .catch((error) => {
     console.error('Ошибка подключения к MongoDB:', error);
   });
+
+app.use(express.json());
+
+app.use(router);
 
 // Обработка корневого маршрута
 app.get('/', (req, res) => {
