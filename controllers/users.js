@@ -35,8 +35,40 @@ const getUserById = (req, res) => {
     });
 };
 
+const updateUser = (req, res) => {
+  const { _id } = req.user;
+  const { name, about } = req.body;
+
+  User.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
+    .then((user) => {
+      if (user) {
+        res.status(200).send(user);
+      } else {
+        res.status(404).send({ error: 'User not found' });
+      }
+    })
+    .catch((error) => res.status(500).send(error));
+};
+
+const updateUserAvatar = (req, res) => {
+  const { avatar } = req.body;
+  const { _id } = req.user;
+
+  User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
+    .then((user) => {
+      if (user) {
+        res.status(200).send(user);
+      } else {
+        res.status(404).send({ error: 'User not found' });
+      }
+    })
+    .catch((error) => res.status(500).send(error));
+};
+
 module.exports = {
   createUser,
   getUsers,
   getUserById,
+  updateUser,
+  updateUserAvatar,
 };
