@@ -58,7 +58,7 @@ const likeCard = (req, res) => {
       }
     })
     .catch(() => {
-      res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
+      res.status(ERROR_BAD_REQUEST).send({ message: 'Произошла неизвестная ошибка' });
     });
 };
 
