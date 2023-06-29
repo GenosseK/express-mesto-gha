@@ -37,7 +37,7 @@ const getUserById = (req, res) => {
       res.status(200).send(user);
     })
     .catch((error) => {
-      if (error.name === 'ValidationError') {
+      if (error.name === 'CastError') {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
       } else {
         res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
