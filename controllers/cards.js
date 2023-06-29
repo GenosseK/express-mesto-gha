@@ -57,8 +57,8 @@ const likeCard = (req, res) => {
         res.status(200).send(card);
       }
     })
-    .catch((error) => {
-      res.status(500).send(error);
+    .catch(() => {
+      res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
     });
 };
 
@@ -78,8 +78,8 @@ const dislikeCard = (req, res) => {
         res.status(200).send(card);
       }
     })
-    .catch((error) => {
-      res.status(500).send(error);
+    .catch(() => {
+      res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
     });
 };
 
