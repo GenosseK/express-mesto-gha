@@ -1,12 +1,14 @@
 const User = require('../models/user');
 
+const { ERROR_BAD_REQUEST, ERROR_NOT_FOUND, ERROR_INTERNAL_SERVER } = require('../errors/errors');
+
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => {
       res.status(200).send(users);
     })
-    .catch((error) => {
-      res.status(500).send(error);
+    .catch(() => {
+      res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
     });
 };
 
@@ -18,7 +20,11 @@ const createUser = (req, res) => {
       res.status(201).send(user);
     })
     .catch((error) => {
-      res.status(500).send(error);
+      if (error.name === 'ValidationError') {
+        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+      } else {
+        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
+      }
     });
 };
 
@@ -26,12 +32,16 @@ const getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: 'User not found' });
+        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь не найден' });
       }
-      return res.status(200).send(user);
+      res.status(200).send(user);
     })
     .catch((error) => {
-      res.status(500).send(error);
+      if (error.name === 'ValidationError') {
+        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+      } else {
+        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
+      }
     });
 };
 
@@ -41,13 +51,19 @@ const updateUser = (req, res) => {
 
   User.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
-      if (user) {
-        res.status(200).send(user);
+      if (!user) {
+        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
-        res.status(404).send({ error: 'User not found' });
+        res.status(200).send(user);
       }
     })
-    .catch((error) => res.status(500).send(error));
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+      } else {
+        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
+      }
+    });
 };
 
 const updateUserAvatar = (req, res) => {
@@ -56,13 +72,19 @@ const updateUserAvatar = (req, res) => {
 
   User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
-      if (user) {
-        res.status(200).send(user);
+      if (!user) {
+        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
-        res.status(404).send({ error: 'User not found' });
+        res.status(200).send(user);
       }
     })
-    .catch((error) => res.status(500).send(error));
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+      } else {
+        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
+      }
+    });
 };
 
 module.exports = {
