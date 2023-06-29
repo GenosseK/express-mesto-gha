@@ -32,9 +32,9 @@ const getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь не найден' });
+        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь не найден' });
       }
-      return res.status(200).send(user);
+      res.status(200).send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
