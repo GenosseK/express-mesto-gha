@@ -61,8 +61,12 @@ const likeCard = (req, res) => {
         res.status(200).send(card);
       }
     })
-    .catch(() => {
-      res.status(ERROR_BAD_REQUEST).send({ message: 'Произошла неизвестная ошибка' });
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+      } else {
+        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
+      }
     });
 };
 

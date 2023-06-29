@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = require('./routes');
 
+const { ERROR_NOT_FOUND } = require('./errors/errors');
 // Подключение к серверу MongoDB
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
@@ -28,6 +29,9 @@ app.use((req, res, next) => {
 });
 
 app.use(router);
+app.use('/', (reg, res) => {
+  res.status(ERROR_NOT_FOUND).send({ message: 'Что-то пошло не так...' });
+});
 
 // Обработка корневого маршрута
 app.get('/', (req, res) => {
