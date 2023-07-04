@@ -30,15 +30,17 @@ const createUser = (req, res) => {
 
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
+    .orFail(() => {
+      throw new Error('Пользователь не найден');
+    })
     .then((user) => {
-      if (!user) {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь не найден' });
-      }
       res.status(200).send(user);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+      } else if (error.message === 'Пользователь не найден') {
+        res.status(ERROR_NOT_FOUND).send({ message: error.message });
       } else {
         res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
       }
@@ -50,16 +52,17 @@ const updateUser = (req, res) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
+    .orFail(() => {
+      throw new Error('Пользователь не найден');
+    })
     .then((user) => {
-      if (!user) {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь не найден' });
-      } else {
-        res.status(200).send(user);
-      }
+      res.status(200).send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+      } else if (error.message === 'Пользователь не найден') {
+        res.status(ERROR_NOT_FOUND).send({ message: error.message });
       } else {
         res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
       }
@@ -71,16 +74,17 @@ const updateUserAvatar = (req, res) => {
   const { _id } = req.user;
 
   User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
+    .orFail(() => {
+      throw new Error('Пользователь не найден');
+    })
     .then((user) => {
-      if (!user) {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь не найден' });
-      } else {
-        res.status(200).send(user);
-      }
+      res.status(200).send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+      } else if (error.message === 'Пользователь не найден') {
+        res.status(ERROR_NOT_FOUND).send({ message: error.message });
       } else {
         res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
       }
