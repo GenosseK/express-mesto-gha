@@ -117,7 +117,7 @@ const login = (req, res) => {
           return;
         }
 
-        const token = jwt.sign({ _id: user._id }, 'your-secret-key', { expiresIn: '7d' });
+        const token = jwt.sign({ _id: user._id }, 'my-secret-key', { expiresIn: '7d' });
 
         res.cookie('token', token, {
           httpOnly: true,
@@ -136,6 +136,21 @@ const login = (req, res) => {
     });
 };
 
+const getUserInfo = (req, res, next) => {
+  const userId = req.user._id;
+
+  User.findById(userId)
+    .orFail(() => {
+      throw new Error('Пользователь не найден');
+    })
+    .then((user) => {
+      res.status(200).send(user);
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
 module.exports = {
   createUser,
   getUsers,
@@ -143,4 +158,5 @@ module.exports = {
   updateUser,
   updateUserAvatar,
   login,
+  getUserInfo,
 };
