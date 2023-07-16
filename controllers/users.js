@@ -102,6 +102,7 @@ const login = (req, res) => {
   const { email, password } = req.body;
 
   User.findOne({ email })
+    .select('+password')
     .orFail(() => {
       throw new Error('Неправильные почта или пароль');
     })
