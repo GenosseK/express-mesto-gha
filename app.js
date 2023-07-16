@@ -24,14 +24,13 @@ app.use(helmet());
 
 app.use(express.json());
 
-/*
 app.use((req, res, next) => {
   req.user = {
     _id: '649bfc0ea884cfaf2a5539b3',
   };
 
   next();
-}); */
+});
 
 app.use(router);
 
