@@ -42,7 +42,7 @@ const createUser = (req, res, next) => {
         } else if (error.name === 'ValidationError') {
           next(new BadRequestError('Переданные данные некорректны'));
         } else {
-          next(new Error('Произошла неизвестная ошибка'));
+          next(error);
         }
       });
   });
@@ -62,7 +62,7 @@ const getUserById = (req, res, next) => {
       } else if (error.message === 'Пользователь не найден') {
         next(new NotFoundError(error.message));
       } else {
-        next(new Error('Произошла неизвестная ошибка'));
+        next(error);
       }
     });
 };
@@ -84,7 +84,7 @@ const updateUser = (req, res, next) => {
       } else if (error.message === 'Пользователь не найден') {
         next(new NotFoundError(error.message));
       } else {
-        next(new Error('Произошла неизвестная ошибка'));
+        next(error);
       }
     });
 };
@@ -106,7 +106,7 @@ const updateUserAvatar = (req, res, next) => {
       } else if (error.message === 'Пользователь не найден') {
         next(new NotFoundError(error.message));
       } else {
-        next(new Error('Произошла неизвестная ошибка'));
+        next(error);
       }
     });
 };
