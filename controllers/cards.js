@@ -1,8 +1,9 @@
 const Card = require('../models/card');
 
-const { ERROR_BAD_REQUEST, ERROR_NOT_FOUND, ERROR_INTERNAL_SERVER } = require('../errors/errors');
+const BadRequestError = require('../errors/badRequestError');
+const NotFoundError = require('../errors/notFoundError');
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { _id } = req.user;
   const { name, link } = req.body;
 
@@ -10,38 +11,36 @@ const createCard = (req, res) => {
     .then((card) => res.status(201).send(card))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+        next(new BadRequestError('Переданные данные некорректны'));
       } else {
-        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
+        next(error);
       }
     });
 };
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find()
     .then((cards) => res.send(cards))
-    .catch(() => {
-      res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
-    });
+    .catch(next);
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndRemove(cardId)
     .orFail(() => {
-      throw new Error('Карточка не найдена');
+      throw new NotFoundError('Карточка не найдена');
     })
     .then((card) => {
       res.status(200).send(card);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+        next(new BadRequestError('Переданные данные некорректны'));
       } else if (error.message === 'Карточка не найдена') {
-        res.status(ERROR_NOT_FOUND).send({ message: error.message });
+        next(new NotFoundError(error.message));
       } else {
-        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
+        next(error);
       }
     });
 };
@@ -78,46 +77,46 @@ const deleteCard = (req, res) => {
 };
 */
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   const { cardId } = req.params;
   const { _id } = req.user;
 
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: _id } }, { new: true })
     .orFail(() => {
-      throw new Error('Карточка не найдена');
+      throw new NotFoundError('Карточка не найдена');
     })
     .then((card) => {
       res.status(200).send(card);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+        next(new BadRequestError('Переданные данные некорректны'));
       } else if (error.message === 'Карточка не найдена') {
-        res.status(ERROR_NOT_FOUND).send({ message: error.message });
+        next(new NotFoundError(error.message));
       } else {
-        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
+        next(error);
       }
     });
 };
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   const { cardId } = req.params;
   const { _id } = req.user;
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: _id } }, { new: true })
     .orFail(() => {
-      throw new Error('Карточка не найдена');
+      throw new NotFoundError('Карточка не найдена');
     })
     .then((card) => {
       res.status(200).send(card);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+        next(new BadRequestError('Переданные данные некорректны'));
       } else if (error.message === 'Карточка не найдена') {
-        res.status(ERROR_NOT_FOUND).send({ message: error.message });
+        next(new NotFoundError(error.message));
       } else {
-        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
+        next(error);
       }
     });
 };
