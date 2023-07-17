@@ -2,6 +2,7 @@ const Card = require('../models/card');
 
 const BadRequestError = require('../errors/badRequestError');
 const NotFoundError = require('../errors/notFoundError');
+const ForbiddenError = require('../errors/forbiddenError');
 
 const createCard = (req, res, next) => {
   const { _id } = req.user;
@@ -24,6 +25,7 @@ const getCards = (req, res, next) => {
     .catch(next);
 };
 
+/*
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
 
@@ -44,9 +46,9 @@ const deleteCard = (req, res, next) => {
       }
     });
 };
+*/
 
-/*
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const { _id } = req.user;
 
@@ -67,15 +69,14 @@ const deleteCard = (req, res) => {
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+        next(new BadRequestError('Переданные данные некорректны'));
       } else if (error instanceof NotFoundError || error instanceof ForbiddenError) {
         res.status(error.statusCode).send({ message: error.message });
       } else {
-        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
+        next(error);
       }
     });
 };
-*/
 
 const likeCard = (req, res, next) => {
   const { cardId } = req.params;
