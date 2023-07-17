@@ -28,8 +28,10 @@ const createUser = (req, res, next) => {
     User.create({
       name, about, avatar, email, password: hashedPassword,
     })
-      .then((user) => {
-        res.status(201).send(user);
+      .then(() => {
+        res.status(201).send({
+          name, about, avatar, email,
+        });
       })
       .catch((error) => {
         if (error.name === 'ValidationError') {
@@ -145,7 +147,6 @@ const login = (req, res, next) => {
 };
 */
 
-
 const login = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email })
@@ -167,7 +168,6 @@ const login = (req, res, next) => {
     })
     .catch(next);
 };
-
 
 const getUserInfo = (req, res, next) => {
   const userId = req.user._id;
