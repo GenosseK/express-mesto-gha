@@ -31,25 +31,26 @@ const deleteCard = (req, res) => {
   const { cardId } = req.params;
   const { _id } = req.user;
 
-  Card.findByIdAndRemove(cardId)
-    .orFail(() => {
-      throw new NotFoundError('Карточка не найдена');
-    })
+  Card.findById(cardId)
     .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Карточка не найдена');
+      }
+
       if (card.owner.toString() !== _id) {
-        throw new ForbiddenError('У вас нет прав на удаление этой карточки');
+        throw new ForbiddenError('Недостаточно прав для удаления карточки');
       }
 
       return Card.findByIdAndRemove(cardId);
     })
-    .then((removedCard) => {
-      res.status(200).send(removedCard);
+    .then((card) => {
+      res.status(200).send(card);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
-      } else if (error.message === 'Карточка не найдена') {
-        res.status(ERROR_NOT_FOUND).send({ message: error.message });
+      } else if (error instanceof NotFoundError || error instanceof ForbiddenError) {
+        res.status(error.statusCode).send({ message: error.message });
       } else {
         res.status(ERROR_INTERNAL_SERVER).send({ message: 'Произошла неизвестная ошибка' });
       }
