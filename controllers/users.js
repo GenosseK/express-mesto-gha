@@ -16,14 +16,18 @@ const getUsers = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
   bcrypt.hash(password, 10, (err, hashedPassword) => {
     if (err) {
       next(new Error('Произошла неизвестная ошибка'));
       return;
     }
 
-    User.create({ name, about, avatar, email, password: hashedPassword })
+    User.create({
+      name, about, avatar, email, password: hashedPassword,
+    })
       .then((user) => {
         res.status(201).send(user);
       })
@@ -100,6 +104,7 @@ const updateUserAvatar = (req, res, next) => {
     });
 };
 
+/*
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
@@ -138,6 +143,31 @@ const login = (req, res, next) => {
       }
     });
 };
+*/
+
+
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+  User.findOne({ email })
+    .select('+password')
+    .orFail(() => {
+      throw new UnauthorizedError('Неправильные почта или пароль');
+    })
+    .then((user) => {
+      bcrypt.compare(password, user.password)
+        .then((validUser) => {
+          if (validUser) {
+            const token = jwt.sign({ _id: user._id }, 'my-secret-key', { expiresIn: '7d' });
+            res.send({ token });
+          } else {
+            throw new UnauthorizedError('Неправильные почта или пароль');
+          }
+        })
+        .catch(next);
+    })
+    .catch(next);
+};
+
 
 const getUserInfo = (req, res, next) => {
   const userId = req.user._id;
