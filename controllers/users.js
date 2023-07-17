@@ -28,13 +28,18 @@ const createUser = (req, res, next) => {
     User.create({
       name, about, avatar, email, password: hashedPassword,
     })
-      .then(() => {
+      .then((user) => {
         res.status(201).send({
-          name, about, avatar, email,
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
         });
       })
       .catch((error) => {
-        if (error.name === 'ValidationError') {
+        if (error.code === 11000) {
+          next(new ConflictError('Пользователь с таким email уже существует'));
+        } else if (error.name === 'ValidationError') {
           next(new BadRequestError('Переданные данные некорректны'));
         } else {
           next(new Error('Произошла неизвестная ошибка'));
