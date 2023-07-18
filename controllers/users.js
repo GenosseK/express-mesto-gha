@@ -59,8 +59,6 @@ const getUserById = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         next(new BadRequestError('Переданные данные некорректны'));
-      } else if (error.message === 'Пользователь не найден') {
-        next(new NotFoundError(error.message));
       } else {
         next(error);
       }
@@ -81,8 +79,6 @@ const updateUser = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         next(new BadRequestError('Переданные данные некорректны'));
-      } else if (error.message === 'Пользователь не найден') {
-        next(new NotFoundError(error.message));
       } else {
         next(error);
       }
@@ -103,54 +99,11 @@ const updateUserAvatar = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         next(new BadRequestError('Переданные данные некорректны'));
-      } else if (error.message === 'Пользователь не найден') {
-        next(new NotFoundError(error.message));
       } else {
         next(error);
       }
     });
 };
-
-/*
-const login = (req, res, next) => {
-  const { email, password } = req.body;
-
-  User.findOne({ email })
-    .select('+password')
-    .orFail(() => {
-      throw new UnauthorizedError('Неправильные почта или пароль');
-    })
-    .then((user) => {
-      bcrypt.compare(password, user.password, (err, isMatch) => {
-        if (err) {
-          next(new Error('Произошла неизвестная ошибка'));
-          return;
-        }
-
-        if (!isMatch) {
-          next(new BadRequestError('Неправильные почта или пароль'));
-          return;
-        }
-
-        const token = jwt.sign({ _id: user._id }, 'my-secret-key', { expiresIn: '7d' });
-
-        res.cookie('token', token, {
-          httpOnly: true,
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        }).send({ message: 'Успешный вход' });
-      });
-    })
-    .catch((error) => {
-      if (error.message === 'Неправильные почта или пароль') {
-        next(new UnauthorizedError(error.message));
-      } else if (error.name === 'CastError') {
-        next(new BadRequestError('Переданные данные некорректны'));
-      } else {
-        next(new Error('Произошла неизвестная ошибка'));
-      }
-    });
-};
-*/
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
