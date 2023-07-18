@@ -62,7 +62,7 @@ const deleteCard = (req, res, next) => {
         throw new ForbiddenError('Недостаточно прав для удаления карточки');
       }
 
-      return Card.findByIdAndRemove(cardId);
+      return card.deleteOne();
     })
     .then((card) => {
       res.status(200).send(card);
@@ -71,7 +71,7 @@ const deleteCard = (req, res, next) => {
       if (error.name === 'CastError') {
         next(new BadRequestError('Переданные данные некорректны'));
       } else if (error instanceof NotFoundError || error instanceof ForbiddenError) {
-        res.status(error.statusCode).send({ message: error.message });
+        next(error);
       } else {
         next(error);
       }
