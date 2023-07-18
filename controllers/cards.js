@@ -25,29 +25,6 @@ const getCards = (req, res, next) => {
     .catch(next);
 };
 
-/*
-const deleteCard = (req, res, next) => {
-  const { cardId } = req.params;
-
-  Card.findByIdAndRemove(cardId)
-    .orFail(() => {
-      throw new NotFoundError('Карточка не найдена');
-    })
-    .then((card) => {
-      res.status(200).send(card);
-    })
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        next(new BadRequestError('Переданные данные некорректны'));
-      } else if (error.message === 'Карточка не найдена') {
-        next(new NotFoundError(error.message));
-      } else {
-        next(error);
-      }
-    });
-};
-*/
-
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const { _id } = req.user;

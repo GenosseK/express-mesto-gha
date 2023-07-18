@@ -22,6 +22,7 @@ const createUser = (req, res, next) => {
   bcrypt.hash(password, 10, (err, hashedPassword) => {
     if (err) {
       next(err);
+      return;
     }
 
     User.create({
