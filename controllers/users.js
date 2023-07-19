@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { ValidationError, CastError } = require('mongoose').Error;
 const User = require('../models/user');
 
 const UnauthorizedError = require('../errors/unauthorizedError');
@@ -39,7 +40,7 @@ const createUser = (req, res, next) => {
       .catch((error) => {
         if (error.code === 11000) {
           next(new ConflictError('Пользователь с таким email уже существует'));
-        } else if (error.name === 'ValidationError') {
+        } else if (error instanceof ValidationError) {
           next(new BadRequestError('Переданные данные некорректны'));
         } else {
           next(error);
@@ -57,7 +58,7 @@ const getUserById = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((error) => {
-      if (error.name === 'CastError') {
+      if (error instanceof CastError) {
         next(new BadRequestError('Переданные данные некорректны'));
       } else {
         next(error);
@@ -77,7 +78,7 @@ const updateUser = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((error) => {
-      if (error.name === 'ValidationError') {
+      if (error instanceof ValidationError) {
         next(new BadRequestError('Переданные данные некорректны'));
       } else {
         next(error);
@@ -97,7 +98,7 @@ const updateUserAvatar = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((error) => {
-      if (error.name === 'ValidationError') {
+      if (error instanceof ValidationError) {
         next(new BadRequestError('Переданные данные некорректны'));
       } else {
         next(error);
