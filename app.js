@@ -5,6 +5,7 @@ const { errors } = require('celebrate');
 const router = require('./routes');
 
 const errorHandler = require('./middlewares/errorHandler');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
@@ -24,7 +25,11 @@ app.use(helmet());
 
 app.use(express.json());
 
+app.use(requestLogger);
+
 app.use(router);
+
+app.use(errorLogger);
 
 app.use(errors());
 
